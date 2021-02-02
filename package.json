@@ -1,0 +1,96 @@
+{
+	"name": "calendar-time",
+	"displayName": "Calendar Time",
+	"publisher": "softwaredotcom",
+	"description": "",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.52.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"main": "./dist/extension.js",
+	"contributes": {
+		"commands": [
+			{
+        "command": "calendartime.refreshCalendarView",
+        "title": "Code Time: Refresh calendar events",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
+      }
+		],
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "calendar-time",
+					"title": "Calendar Time",
+					"icon": "resources/dark/view-calendar.svg"
+				}
+			]
+		},
+		"views": {
+			"calendar-time": [
+				{
+					"id": "calendar-time-view",
+					"name": "Calendar Time"
+				},
+				{
+					"id": "calendar-account-view",
+					"name": "Account"
+				}
+			]
+		},
+		"menus": {
+      "view/item/context": [],
+      "view/title": [
+        {
+          "command": "calendartime.refreshCalendarView",
+          "group": "navigation@1",
+          "when": "view =~ /calendar-time-view/"
+        }
+      ]
+    }
+	},
+	"scripts": {
+		"vscode:prepublish": "yarn run package",
+		"compile": "webpack",
+		"watch": "webpack --watch",
+		"webpack-dev": "webpack --mode development --watch",
+		"package": "webpack --mode production --devtool hidden-source-map",
+		"test-compile": "tsc -p ./",
+		"test-watch": "tsc -watch -p ./",
+		"pretest": "yarn run test-compile && yarn run lint",
+		"lint": "eslint src --ext ts",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.3",
+		"@types/mocha": "^8.0.4",
+		"@types/node": "^12.11.7",
+		"@types/vscode": "^1.52.0",
+		"copy-webpack-plugin": "^7.0.0",
+		"eslint": "^7.19.0",
+		"glob": "^7.1.6",
+		"mocha": "^8.2.1",
+		"ts-loader": "^8.0.14",
+		"typescript": "^4.1.3",
+		"vscode-test": "^1.5.0",
+		"webpack": "^5.19.0",
+		"webpack-cli": "^4.4.0",
+		"yarn-check-webpack-plugin": "^1.2.0"
+	},
+	"dependencies": {
+		"axios": "^0.21.1",
+		"date-fns": "^2.16.1",
+		"file-it": "^1.1.0",
+		"open": "^7.4.0",
+		"query-string": "^6.13.8",
+		"uuid": "^8.3.2"
+	}
+}
