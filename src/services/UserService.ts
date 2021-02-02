@@ -20,19 +20,6 @@ export async function getUser(): Promise<SoftwareUser> {
   return softwareUser;
 }
 
-export async function populateCalendarIntegrations(user: SoftwareUser = null) {
-  user = (!user) ? await getUser() : user;
-  if (user && user.integrations?.length) {
-    const integrations: Integration[] = getIntegrations();
-    const calIntegrations: Integration[] = user.integrations.filter(
-      (n:Integration) => n.name.toLowerCase().includes("calendar") && n.status.toLowerCase() === "active" && n.access_token);
-    integrations.push(...calIntegrations);
-    syncIntegrations(integrations);
-
-    commands.executeCommand("calendartime.refreshAccountView");
-  }
-}
-
 export async function getUserRegistrationState(isIntegration = false) {
   const jwt = getItem("jwt");
   const auth_callback_state = getAuthCallbackState(false /*autoCreate*/);

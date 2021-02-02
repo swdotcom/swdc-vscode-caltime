@@ -4,7 +4,6 @@ import path = require("path");
 import fs = require("fs");
 import { format } from "date-fns";
 
-
 let currentPanel: WebviewPanel | undefined = undefined;
 let currentColorKind: number = undefined;
 let currentEvent: CalEvent = null;
@@ -82,7 +81,7 @@ export function getCalendarEventInfo(event: CalEvent): string {
     organizer: event.organizer?.email ?? "",
     summary: event.summary,
     status: event.status,
-    startTime
+    startTime,
   };
 
   const templateString = fs.readFileSync(getCalendarViewTemplate()).toString();

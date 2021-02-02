@@ -31,7 +31,7 @@ export async function softwareGet(api, overriding_token: string = null) {
   if (jwt && !overriding_token) {
     beApi.defaults.headers.common["Authorization"] = jwt;
   } else if (overriding_token) {
-    beApi.defaults.headers.common["Authorization"] = overriding_token
+    beApi.defaults.headers.common["Authorization"] = overriding_token;
   }
 
   return await beApi.get(api).catch((err) => {

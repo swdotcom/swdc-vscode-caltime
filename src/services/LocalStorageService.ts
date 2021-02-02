@@ -1,13 +1,12 @@
 import { ExtensionContext, Memento } from "vscode";
-import { getItem } from "../managers/LocalManager";
 
 let ctx: ExtensionContext = null;
 
-export function initializeLocalStorageContext(context:ExtensionContext) {
+export function initializeLocalStorageContext(context: ExtensionContext) {
   ctx = context;
 }
 
-export function updateGlobalState(key: string, val:any) {
+export function updateGlobalState(key: string, val: any) {
   if (!ctx) {
     console.error("global state context is not set");
     return;
@@ -15,7 +14,7 @@ export function updateGlobalState(key: string, val:any) {
   ctx.globalState.update(key, val);
 }
 
-export function getGlobalState(key: string):any {
+export function getGlobalState(key: string): any {
   if (!ctx) {
     console.error("global state context is not set");
     return null;

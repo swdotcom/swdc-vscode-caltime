@@ -63,9 +63,13 @@ export function getFileDataAsJson(file) {
   return fileIt.readJsonFileSync(file);
 }
 
+/**
+ * Return existing integrations or an empty array
+ */
 export function getIntegrations() {
   let integrations = getFileDataAsJson(getIntegrationsFile());
   if (!integrations) {
+    // make sure we return an empty list
     integrations = [];
     syncIntegrations(integrations);
   }

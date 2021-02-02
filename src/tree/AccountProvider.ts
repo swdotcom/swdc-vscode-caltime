@@ -2,7 +2,6 @@ import { TreeDataProvider, EventEmitter, Event, TreeView, TreeItem } from "vscod
 import { getAccountItems } from "../managers/TreeManager";
 import { CalTreeItem } from "../models/CalTreeItem";
 
-
 export class AccountProvider implements TreeDataProvider<CalTreeItem> {
   private _onDidChangeTreeData: EventEmitter<CalTreeItem | undefined> = new EventEmitter<CalTreeItem | undefined>();
 
@@ -14,7 +13,7 @@ export class AccountProvider implements TreeDataProvider<CalTreeItem> {
     //
   }
 
-  async revealTree(item:CalTreeItem) {
+  async revealTree(item: CalTreeItem) {
     try {
       // select the readme item
       this.view.reveal(item, {
@@ -43,8 +42,8 @@ export class AccountProvider implements TreeDataProvider<CalTreeItem> {
   }
 
   getTreeItem(element: CalTreeItem): TreeItem {
-		return element;
-	}
+    return element;
+  }
 
   async getChildren(element?: CalTreeItem): Promise<CalTreeItem[]> {
     let items: CalTreeItem[] = [];

@@ -1,7 +1,7 @@
 import { commands, window } from "vscode";
 import { API_ENDPOINT, SOFTWARE_URL } from "../Constants";
-import { getUserRegistrationState, populateCalendarIntegrations } from "../services/UserService";
-import { clearCalendarIntegrations } from "./IntegrationManager";
+import { getUserRegistrationState } from "../services/UserService";
+import { clearCalendarIntegrations, populateCalendarIntegrations } from "./IntegrationManager";
 import { getAuthCallbackState, getItem, getPluginUuid, setAuthCallbackState, setItem } from "./LocalManager";
 import { showQuickPick } from "./MenuManager";
 import { getPluginId, getPluginType, getVersion } from "./UtilManager";
@@ -85,21 +85,21 @@ export async function launchAuth(loginType: string, isSignup: boolean) {
   open(`${url}?${queryString.stringify(obj)}`);
 
   setTimeout(() => {
-    userStatusFetchHandler(40);
+    userStatusFetchHandlerLazily(40);
   }, 1000);
 }
 
-async function userStatusFetchHandler(tryCountUntilFoundUser) {
+async function userStatusFetchHandlerLazily(tryCountUntilFoundUser) {
   const state = await getUserRegistrationState();
   if (!state.loggedOn) {
     // try again if the count is not zero
     if (tryCountUntilFoundUser > 0) {
       tryCountUntilFoundUser -= 1;
-      userStatusFetchHandler(tryCountUntilFoundUser);
+      userStatusFetchHandlerLazily(tryCountUntilFoundUser);
     } else {
       // clear the auth callback state
       setItem("switching_account", false);
-      userStatusFetchHandler(null);
+      setAuthCallbackState(null);
     }
   } else {
     // clear the auth callback state
@@ -108,8 +108,7 @@ async function userStatusFetchHandler(tryCountUntilFoundUser) {
 
     clearCalendarIntegrations();
 
-    const message = "Successfully logged on to Calendar Time";
-    window.showInformationMessage(message);
+    window.showInformationMessage("Successfully logged on to Calendar Time");
 
     await populateCalendarIntegrations(state.user);
 
@@ -137,7 +136,8 @@ export function checkRegistration(showSignup = true) {
 }
 
 export function showModalSignupPrompt(msg: string) {
-  window.showInformationMessage(
+  window
+    .showInformationMessage(
       msg,
       {
         modal: true,

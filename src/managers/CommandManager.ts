@@ -1,14 +1,14 @@
 import { commands, Disposable, TreeView, window } from "vscode";
 import { CalEvent } from "../models/CalEvent";
 import { CalTreeItem } from "../models/CalTreeItem";
+import { connectGoogleCalendar, disconnectGoogleCalendar } from "../services/CalendarService";
 import { AccountProvider } from "../tree/AccountProvider";
 import { CalendarEventProvider } from "../tree/CalendarEventProvider";
 import { connectCalendar, launchAuth, showLogInMenuOptions, showSignUpMenuOptions } from "./AccountManager";
 import { showCalendarInfo } from "./CalendarViewManager";
 import { connectTreeView } from "./TreeManager";
 
-export function initializeCommands(): {dispose: () => void;} {
-
+export function initializeCommands(): { dispose: () => void } {
   const cmds = [];
 
   const calTreeView: TreeView<CalTreeItem> = createCalEventTreeView(cmds);
@@ -55,15 +55,21 @@ export function initializeCommands(): {dispose: () => void;} {
 
   cmds.push(
     commands.registerCommand("calendartime.connectCalendar", () => {
-      connectCalendar();
+      connectGoogleCalendar();
     })
   );
 
   cmds.push(
-    commands.registerCommand("calendartime.viewEvent", (event:CalEvent) => {
+    commands.registerCommand("calendartime.viewEvent", (event: CalEvent) => {
       showCalendarInfo(event);
     })
-  )
+  );
+
+  cmds.push(
+    commands.registerCommand("calendartime.disconnectCalendar", (event: CalEvent) => {
+      disconnectGoogleCalendar();
+    })
+  );
 
   return Disposable.from(...cmds);
 }

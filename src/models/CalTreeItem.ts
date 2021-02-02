@@ -7,16 +7,18 @@ export class CalTreeItem extends TreeItem {
   public value: any = undefined;
   public iconName: string = "";
   public children: CalTreeItem[] = null;
+  public id: string = "";
 
   constructor(
     label: string | TreeItemLabel,
     tooltip: string,
     description: string = "",
     iconName: string = "",
-    collapsibleState: TreeItemCollapsibleState = TreeItemCollapsibleState.None,
-	) {
-		super(label, collapsibleState);
-		this.tooltip = tooltip || "";
+    collapsibleState: TreeItemCollapsibleState = TreeItemCollapsibleState.None
+  ) {
+    super(label, collapsibleState);
+    this.id = typeof label === "string" ? label.toLowerCase().replace(/ /g, "_") : label.label.toLowerCase().replace(/ /g, "_");
+    this.tooltip = tooltip || "";
     this.description = description;
     this.iconName = iconName;
 
@@ -30,7 +32,7 @@ export class CalTreeItem extends TreeItem {
       delete this.iconPath;
     }
   }
-  
+
   iconPath = {
     light: "",
     dark: "",

@@ -123,4 +123,3 @@ export function getThisWeek(isUnix: boolean = true) {
   const end = isUnix ? getUnixTime(endOfWeek(d)) : endOfWeek(d);
   return { start, end };
 }
-
