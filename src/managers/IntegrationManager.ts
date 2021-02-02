@@ -1,6 +1,6 @@
 import { CalEvent } from "../models/CalEvent";
 import { Integration } from "../models/Integration";
-import { getIntegrations } from "./LocalManager";
+import { getIntegrations, syncIntegrations } from "./LocalManager";
 import { isAfter, isToday, formatDistanceToNow } from "date-fns";
 
 export function getCalendarIntegrations() {
@@ -9,6 +9,11 @@ export function getCalendarIntegrations() {
 
 export function hasCalendarIntegrations() {
   return !!(getCalendarIntegrations().length);
+}
+
+export function clearCalendarIntegrations() {
+  const filteredIntegrations = getIntegrations().filter((n:Integration) => !n.name.toLowerCase().includes("calendar"));
+  syncIntegrations(filteredIntegrations);
 }
 
 export function getTimeUntilNextMeeting(calEvents: CalEvent[]): string {

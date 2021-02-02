@@ -1,13 +1,11 @@
 import { commands, Disposable, TreeView, window } from "vscode";
-import { THIS_WEEK_EVENTS } from "../Constants";
+import { CalEvent } from "../models/CalEvent";
 import { CalTreeItem } from "../models/CalTreeItem";
-import { clearGlobalState } from "../services/LocalStorageService";
 import { AccountProvider } from "../tree/AccountProvider";
 import { CalendarEventProvider } from "../tree/CalendarEventProvider";
 import { connectCalendar, launchAuth, showLogInMenuOptions, showSignUpMenuOptions } from "./AccountManager";
+import { showCalendarInfo } from "./CalendarViewManager";
 import { connectTreeView } from "./TreeManager";
-
-let intervals: any[] = [];
 
 export function initializeCommands(): {dispose: () => void;} {
 
@@ -61,6 +59,12 @@ export function initializeCommands(): {dispose: () => void;} {
     })
   );
 
+  cmds.push(
+    commands.registerCommand("calendartime.viewEvent", (event:CalEvent) => {
+      showCalendarInfo(event);
+    })
+  )
+
   return Disposable.from(...cmds);
 }
 
@@ -73,21 +77,10 @@ function createCalEventTreeView(cmds): TreeView<CalTreeItem> {
   calEventProvider.bindView(calEventTreeView);
 
   cmds.push(
-    commands.registerCommand("calendartime.refreshUpcomingMeetingInfo", () => {
-      calEventProvider.refresh();
-    })
-  );
-
-  cmds.push(
     commands.registerCommand("calendartime.refreshCalendarView", () => {
-      clearGlobalState(THIS_WEEK_EVENTS);
       calEventProvider.refresh();
     })
   );
-
-  intervals.push(setInterval(() => {
-    commands.executeCommand("calendartime.refreshUpcomingMeetingInfo");
-  }, 1000 * 60 * 15));
 
   return calEventTreeView;
 }
@@ -107,10 +100,4 @@ function createCalAccountTreeView(cmds): TreeView<CalTreeItem> {
   );
 
   return accountTreeView;
-}
-
-export function disposeCommandIntervals() {
-  for (const interval of intervals) {
-    clearTimeout(interval);
-  }
 }

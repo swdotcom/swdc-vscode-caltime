@@ -26,10 +26,12 @@ beApi.defaults.headers.common["X-SWDC-Plugin-UUID"] = getPluginUuid();
  * @param jwt
  */
 
-export async function softwareGet(api) {
+export async function softwareGet(api, overriding_token: string = null) {
   const jwt: string = getItem("jwt");
-  if (jwt) {
+  if (jwt && !overriding_token) {
     beApi.defaults.headers.common["Authorization"] = jwt;
+  } else if (overriding_token) {
+    beApi.defaults.headers.common["Authorization"] = overriding_token
   }
 
   return await beApi.get(api).catch((err) => {
@@ -101,14 +103,6 @@ export async function softwareDelete(api) {
  * axios always sends the following
  * status:200
  * statusText:"OK"
- * 
-    code:"ENOTFOUND"
-    config:Object {adapter: , transformRequest: Object, transformResponse: Object, …}
-    errno:"ENOTFOUND"
-    host:"api.spotify.com"
-    hostname:"api.spotify.com"
-    message:"getaddrinfo ENOTFOUND api.spotify.com api.spotify.com:443"
-    port:443
  */
 export function isResponseOk(resp) {
   let status = getResponseStatus(resp);

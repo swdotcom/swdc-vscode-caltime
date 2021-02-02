@@ -1,4 +1,4 @@
-import { Disposable, TreeItemCollapsibleState, TreeView } from "vscode";
+import { commands, Disposable, TreeItemCollapsibleState, TreeView } from "vscode";
 import { CalendarEventInfo } from "../models/CalendarEventInfo";
 import { CalEvent } from "../models/CalEvent";
 import { CalTreeItem } from "../models/CalTreeItem";
@@ -8,8 +8,6 @@ import { format } from "date-fns";
 import { getThisWeek } from "./UtilManager";
 import { getTimeUntilNextMeeting, hasCalendarIntegrations } from "./IntegrationManager";
 import { populateCalendarIntegrations } from "../services/UserService";
-import { getGlobalState, updateGlobalState } from "../services/LocalStorageService";
-import { THIS_WEEK_EVENTS } from "../Constants";
 
 const collapsedStateMap = {};
 
@@ -36,6 +34,14 @@ export const connectTreeView = (view: TreeView<CalTreeItem>) => {
     })
   );
 };
+
+export function handleChangeSelection(view: TreeView<CalTreeItem>, item: CalTreeItem) {
+  if (item?.command) {
+    const args = item.command?.arguments || [];
+    args.unshift(item);
+    commands.executeCommand(item.command.command, ...args);
+  }
+}
 
 export function isExpanded(id:string) {
   return !!(collapsedStateMap[id] && collapsedStateMap[id] === TreeItemCollapsibleState.Expanded);
@@ -73,28 +79,25 @@ export async function getAccountItems(): Promise<CalTreeItem[]> {
 
 async function createCalendarEventItems(): Promise<CalTreeItem[]> {
   const items: CalTreeItem[] = [];
-  let calEventInfo:CalendarEventInfo = getGlobalState(THIS_WEEK_EVENTS);
+  let calEventInfo:CalendarEventInfo = null;
   if (!calEventInfo) {
     calEventInfo = await getThisWeekCalendarEvents();
   }
 
-  const treeParentMap = {};
-
-  const { start, end } = getThisWeek(false);
-  const monthStartStr = format(start, "LLL");
-  const monthEndStr = format(end, "LLL");
-  const startStr = format(start, "do");
-  const endStr = format(end, "do");
-
-  const thisWeekParent: CalTreeItem = new CalTreeItem("This week", "", `${monthStartStr} ${startStr} to ${monthEndStr} ${endStr}`);
-  items.push(thisWeekParent);
-
-  const now : Date = new Date();
-  const today: string = format(now, "eeee");
-
   if (calEventInfo?.events?.length) {
+    const treeParentMap = {};
 
-    updateGlobalState(THIS_WEEK_EVENTS, calEventInfo);
+    const { start, end } = getThisWeek(false);
+    const monthStartStr = format(start, "LLL");
+    const monthEndStr = format(end, "LLL");
+    const startStr = format(start, "do");
+    const endStr = format(end, "do");
+
+    const thisWeekParent: CalTreeItem = new CalTreeItem("This week", "", `${monthStartStr} ${startStr} to ${monthEndStr} ${endStr}`);
+    items.push(thisWeekParent);
+
+    const now : Date = new Date();
+    const today: string = format(now, "eeee");
     
     thisWeekParent.children = [];
 
@@ -133,22 +136,34 @@ async function createCalendarEventItems(): Promise<CalTreeItem[]> {
         treeParentMap[dayStr] = dayParent;
       }
 
-      const dateStr = format(new Date(item.start), "K:mmbbbb");
-      dayParent.children.push(new CalTreeItem(item.name, item.summary, dateStr));
+      const dateStr = format(new Date(item.start), "K:mm bbbb");
+      const eventItem: CalTreeItem = new CalTreeItem(item.name, item.summary, dateStr, null);
+      eventItem.command = { title: "View calendar event", command: "calendartime.viewEvent", arguments: [item] };
+      eventItem.value = item;
+
+      dayParent.children.push(eventItem);
     });
+
+    // check to see if the integrations is not in sync with what we've retrieved
+    if (!hasCalendarIntegrations()) {
+      // fetch the integrations (async)
+      populateCalendarIntegrations();
+    }
+
+  } else {
+    // no events found
+    items.push(getConnectCalendarButton());
   }
 
-  // check to see if the integrations is not in sync with what we've retrieved
-  if (!hasCalendarIntegrations() && items.length) {
-    // fetch the integrations
-    populateCalendarIntegrations();
-  }
+  
 
   return items;
 }
 
 function getConnectCalendarButton(): CalTreeItem {
-  return new CalTreeItem("Connect Calendar", "", "", "today.svg", "calendartime.connectCalendar");
+  const calConnectButton: CalTreeItem = new CalTreeItem("Connect Calendar", "", "", "today.svg");
+  calConnectButton.command = { title: "View calendar event", command: "calendartime.connectCalendar", arguments: [] };
+  return calConnectButton;
 }
 
 function getLoggedInButton(): CalTreeItem {
@@ -163,18 +178,16 @@ function createAccountButtons(): CalTreeItem[] {
     "Sign up",
     "Sign up to connect your calendar events",
     "",
-    "google.svg",
-    "calendartime:signUp",
-    "cal-time-sign-up");
+    "google.svg");
+    signupButton.command = { title: "Sign up", command: "calendartime.signUp", arguments: [] };
   items.push(signupButton);
 
   const loginButton = new CalTreeItem(
     "Log in",
     "Log in to connect your calendar events",
     "",
-    "google.svg",
-    "calendartime:signUp",
-    "cal-time-sign-up");
+    "google.svg");
+  loginButton.command = { title: "Log in", command: "calendartime.logIn", arguments: [] };
   items.push(loginButton);
   return items;
 }

@@ -2,6 +2,7 @@ import { ViewColumn, WebviewPanel, window } from "vscode";
 import { CalEvent } from "../models/CalEvent";
 import path = require("path");
 import fs = require("fs");
+import { format } from "date-fns";
 
 
 let currentPanel: WebviewPanel | undefined = undefined;
@@ -67,13 +68,21 @@ export function getCalendarViewTemplate() {
 export function getCalendarEventInfo(event: CalEvent): string {
   const { cardTextColor, cardBackgroundColor, cardInputHeaderColor } = getInputFormStyles();
 
+  // K:mmbbbb
+  const eventDate: Date = new Date(event.start);
+  const startTime = format(eventDate, "ccc, LLL do 'at' K:mm bbbb");
+
+  // name, summary, organizer, status, location
   const templateVars = {
     cardTextColor,
     cardBackgroundColor,
     cardInputHeaderColor,
     location: event.location,
     name: event.name,
-    creator: event.creator
+    organizer: event.organizer?.email ?? "",
+    summary: event.summary,
+    status: event.status,
+    startTime
   };
 
   const templateString = fs.readFileSync(getCalendarViewTemplate()).toString();

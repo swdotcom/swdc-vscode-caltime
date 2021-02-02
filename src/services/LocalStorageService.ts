@@ -1,4 +1,5 @@
 import { ExtensionContext, Memento } from "vscode";
+import { getItem } from "../managers/LocalManager";
 
 let ctx: ExtensionContext = null;
 

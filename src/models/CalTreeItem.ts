@@ -7,23 +7,18 @@ export class CalTreeItem extends TreeItem {
   public value: any = undefined;
   public iconName: string = "";
   public children: CalTreeItem[] = null;
-  public commandStr: string = "";
 
   constructor(
     label: string | TreeItemLabel,
     tooltip: string,
     description: string = "",
     iconName: string = "",
-    commandStr: string = "",
-    contextValue: string = "cal_tree_item",
     collapsibleState: TreeItemCollapsibleState = TreeItemCollapsibleState.None,
 	) {
 		super(label, collapsibleState);
 		this.tooltip = tooltip || "";
     this.description = description;
     this.iconName = iconName;
-    this.commandStr = commandStr;
-    this.contextValue = contextValue;
 
     const { lightPath, darkPath } = getTreeItemIcon(this.iconName);
 
