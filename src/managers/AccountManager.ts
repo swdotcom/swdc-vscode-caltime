@@ -62,7 +62,6 @@ export async function launchAuth(loginType: string, isSignup: boolean) {
     pluginVersion: getVersion(),
     plugin_id: getPluginId(),
     auth_callback_state,
-    login: true,
   };
 
   if (loginType === "github") {

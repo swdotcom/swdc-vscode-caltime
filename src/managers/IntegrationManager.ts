@@ -44,32 +44,30 @@ export async function checkForNewCalendarIntegrationLazily(tryCountUntilFound = 
   }
 }
 
+function merge(a: Integration[], b: Integration[], prop): Integration[] {
+  const reduced: Integration[] = a.filter((n: Integration) => !b.find((n: Integration) => n[prop] === n[prop]));
+  return reduced.concat(b);
+}
+
 export async function populateCalendarIntegrations(user: SoftwareUser = null): Promise<boolean> {
   let foundNewIntegrations = false;
   user = !user ? await getUser() : user;
 
   const integrations: Integration[] = getIntegrations();
+
   if (user && user.integrations && user.integrations.length) {
     const calIntegrations: Integration[] = user.integrations.filter(
       (n: Integration) => n.name.toLowerCase().includes("calendar") && n.status.toLowerCase() === "active" && n.access_token
     );
 
-    // add the ones not currently found in the current integrations
-    if (calIntegrations?.length) {
-      for (let i = 0; i < calIntegrations.length; i++) {
-        const calIntegration = calIntegrations[i];
-        const existingIntegrationMatch = integrations.find((n: Integration) => n.authid === calIntegration.authid);
+    const mergedIntegrations: Integration[] = merge(integrations, calIntegrations, "authId");
 
-        if (!existingIntegrationMatch) {
-          foundNewIntegrations = true;
-          // add this one ot the integrations list
-          integrations.push(calIntegration);
-        }
-      }
+    if (mergedIntegrations.length !== integrations.length) {
+      foundNewIntegrations = true;
+      syncIntegrations(mergedIntegrations);
     }
 
     if (foundNewIntegrations) {
-      syncIntegrations(integrations);
       commands.executeCommand("calendartime.refreshAccountView");
       commands.executeCommand("calendartime.refreshCalendarView");
     }
