@@ -6,8 +6,9 @@ import { getThisWeekCalendarEvents } from "../services/CalendarService";
 import { getItem } from "./LocalManager";
 import { format } from "date-fns";
 import { getThisWeek } from "./UtilManager";
-import { getTimeUntilNextMeeting, hasCalendarIntegrations } from "./IntegrationManager";
+import { getCalendarIntegrations, getTimeUntilNextMeeting, hasCalendarIntegrations } from "./IntegrationManager";
 import { populateCalendarIntegrations } from "../services/UserService";
+import { Integration } from "../models/Integration";
 
 const collapsedStateMap = {};
 
@@ -79,6 +80,17 @@ export async function getAccountItems(): Promise<CalTreeItem[]> {
 
 async function createCalendarEventItems(): Promise<CalTreeItem[]> {
   const items: CalTreeItem[] = [];
+
+  // get the integration type
+  const calIntegrations:Integration[] = getCalendarIntegrations();
+  if (calIntegrations?.length) {
+    for (const calIntegration of calIntegrations) {
+      const integrationButton: CalTreeItem = new CalTreeItem(calIntegration.value, "", "", "google.svg");
+      items.push(integrationButton);
+    }
+  }
+
+
   let calEventInfo:CalendarEventInfo = null;
   if (!calEventInfo) {
     calEventInfo = await getThisWeekCalendarEvents();
@@ -154,8 +166,6 @@ async function createCalendarEventItems(): Promise<CalTreeItem[]> {
     // no events found
     items.push(getConnectCalendarButton());
   }
-
-  
 
   return items;
 }
