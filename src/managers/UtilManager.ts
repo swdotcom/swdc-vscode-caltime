@@ -60,6 +60,19 @@ export async function getHostname() {
   return hostname;
 }
 
+export async function getOsUsername() {
+  let username = os.userInfo().username;
+  if (!username || username.trim() === "") {
+    username = await getCommandResultLine("whoami");
+  }
+  return username;
+}
+
+export function getRandomArbitrary(min, max) {
+  max = max + 0.1;
+  return parseInt(Math.random() * (max - min) + min, 10);
+}
+
 export async function getCommandResultLine(cmd, projectDir = null) {
   const resultList = await getCommandResultList(cmd, projectDir);
 

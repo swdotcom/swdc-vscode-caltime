@@ -2,9 +2,10 @@ import { isResponseOk, softwareGet } from "../client/HttpClient";
 import { CalendarEventInfo } from "../models/CalendarEventInfo";
 import { CalEvent } from "../models/CalEvent";
 import { getPluginType, getThisWeek, getVersion } from "../managers/UtilManager";
-import { getAuthCallbackState, getPluginUuid } from "../managers/LocalManager";
-import { API_ENDPOINT } from "../Constants";
+import { getAuthCallbackState, getItem, getPluginUuid } from "../managers/LocalManager";
+import { API_ENDPOINT, SOFTWARE_URL } from "../Constants";
 import { checkForNewCalendarIntegrationLazily } from "../managers/IntegrationManager";
+import { checkRegistration } from "../managers/AccountManager";
 
 const queryString = require("query-string");
 const open = require("open");
@@ -14,6 +15,9 @@ export async function disconnectGoogleCalendar() {
 }
 
 export async function connectGoogleCalendar() {
+  if (!checkRegistration()) {
+    return;
+  }
   const auth_callback_state: string = getAuthCallbackState(true);
 
   let obj = {
@@ -22,11 +26,12 @@ export async function connectGoogleCalendar() {
     pluginVersion: getVersion(),
     plugin_id: getPluginUuid(),
     auth_callback_state,
-    login: true,
+    token: getItem("jwt"),
+    integrate: "calendar",
+    redirect: `${SOFTWARE_URL}/settings/sources/integrations/gcal`,
   };
   const url: string = `${API_ENDPOINT}/auth/google/calendar?${queryString.stringify(obj)}`;
   open(url);
-  // softwareGet(`${API_ENDPOINT}/auth/google/calendar?${queryString.stringify(obj)}`);
 
   // fetch for the new integration lazily
   setTimeout(() => {

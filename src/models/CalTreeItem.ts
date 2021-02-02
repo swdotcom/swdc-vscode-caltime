@@ -17,7 +17,6 @@ export class CalTreeItem extends TreeItem {
     collapsibleState: TreeItemCollapsibleState = TreeItemCollapsibleState.None
   ) {
     super(label, collapsibleState);
-    this.id = typeof label === "string" ? label.toLowerCase().replace(/ /g, "_") : label.label.toLowerCase().replace(/ /g, "_");
     this.tooltip = tooltip || "";
     this.description = description;
     this.iconName = iconName;

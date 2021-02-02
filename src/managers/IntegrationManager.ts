@@ -30,45 +30,47 @@ export async function checkForNewCalendarIntegrationLazily(tryCountUntilFound = 
     setTimeout(() => {
       checkForNewCalendarIntegrationLazily(tryCountUntilFound);
     }, 12000);
+  } else {
+    // found a user with integrations
+    const foundNewIntegrations: boolean = await populateCalendarIntegrations(user);
+    if (!foundNewIntegrations && tryCountUntilFound > 0) {
+      setTimeout(() => {
+        checkForNewCalendarIntegrationLazily(tryCountUntilFound);
+      }, 12000);
+    } else if (foundNewIntegrations) {
+      // show a notification we found a new integration
+      window.showInformationMessage("Successfully connected your calendar");
+    }
   }
-
-  const foundNewIntegrations: boolean = await populateCalendarIntegrations(user);
-  if (!foundNewIntegrations && tryCountUntilFound > 0) {
-    setTimeout(() => {
-      checkForNewCalendarIntegrationLazily(tryCountUntilFound);
-    }, 12000);
-  } else if (foundNewIntegrations) {
-    // show a notification we found a new integration
-    window.showInformationMessage("Successfully connected your calendar");
-  }
-
-  // done checking: either try count is zero or foundNewIntegrations is TRUE
 }
 
 export async function populateCalendarIntegrations(user: SoftwareUser = null): Promise<boolean> {
   let foundNewIntegrations = false;
   user = !user ? await getUser() : user;
+
+  const integrations: Integration[] = getIntegrations();
   if (user && user.integrations && user.integrations.length) {
-    const integrations: Integration[] = getIntegrations();
     const calIntegrations: Integration[] = user.integrations.filter(
       (n: Integration) => n.name.toLowerCase().includes("calendar") && n.status.toLowerCase() === "active" && n.access_token
     );
 
     // add the ones not currently found in the current integrations
     if (calIntegrations?.length) {
-      for (const calIntegration of calIntegrations) {
-        const foundExisting = integrations.find((n: Integration) => n.authid === calIntegration.authid);
-        if (!foundExisting) {
+      for (let i = 0; i < calIntegrations.length; i++) {
+        const calIntegration = calIntegrations[i];
+        const existingIntegrationMatch = integrations.find((n: Integration) => n.authid === calIntegration.authid);
+
+        if (!existingIntegrationMatch) {
           foundNewIntegrations = true;
+          // add this one ot the integrations list
           integrations.push(calIntegration);
         }
       }
-      syncIntegrations(integrations);
     }
 
-    commands.executeCommand("calendartime.refreshAccountView");
-
     if (foundNewIntegrations) {
+      syncIntegrations(integrations);
+      commands.executeCommand("calendartime.refreshAccountView");
       commands.executeCommand("calendartime.refreshCalendarView");
     }
   }

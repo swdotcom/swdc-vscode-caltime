@@ -1,10 +1,11 @@
 import { commands, window } from "vscode";
+import { isResponseOk, softwarePost } from "../client/HttpClient";
 import { API_ENDPOINT, SOFTWARE_URL } from "../Constants";
 import { getUserRegistrationState } from "../services/UserService";
 import { clearCalendarIntegrations, populateCalendarIntegrations } from "./IntegrationManager";
 import { getAuthCallbackState, getItem, getPluginUuid, setAuthCallbackState, setItem } from "./LocalManager";
 import { showQuickPick } from "./MenuManager";
-import { getPluginId, getPluginType, getVersion } from "./UtilManager";
+import { getHostname, getPluginId, getPluginType, getVersion, getOsUsername } from "./UtilManager";
 
 const queryString = require("query-string");
 const open = require("open");
@@ -117,7 +118,7 @@ async function userStatusFetchHandlerLazily(tryCountUntilFoundUser) {
   }
 }
 
-export function connectCalendar() {
+export function viewWebCalendarSettings() {
   if (!checkRegistration()) {
     return;
   }
@@ -128,6 +129,8 @@ export function connectCalendar() {
 export function checkRegistration(showSignup = true) {
   if (!getItem("name")) {
     if (showSignup) {
+      // reveal the account tree
+      commands.executeCommand("calendartime.revealAccountView");
       showModalSignupPrompt("Connecting a calendar requires a registered account. Sign up or log in to continue.");
     }
     return false;
@@ -149,4 +152,40 @@ export function showModalSignupPrompt(msg: string) {
         commands.executeCommand("calendartime.signUp");
       }
     });
+}
+
+/**
+ * create an anonymous user based on github email or mac addr
+ */
+export async function createAnonymousUser(): Promise<string> {
+  let jwt = getItem("jwt");
+
+  // check one more time before creating the anon user
+  if (!jwt) {
+    // this should not be undefined if its an account reset
+    let plugin_uuid = getPluginUuid();
+    let auth_callback_state = getAuthCallbackState();
+    const username = await getOsUsername();
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const hostname = await getHostname();
+
+    const resp = await softwarePost("/plugins/onboard", {
+      timezone,
+      username,
+      plugin_uuid,
+      hostname,
+      auth_callback_state,
+    });
+    if (isResponseOk(resp) && resp.data && resp.data.jwt) {
+      setItem("jwt", resp.data.jwt);
+      if (!resp.data.user.registered) {
+        setItem("name", null);
+      }
+      setItem("switching_account", false);
+      setAuthCallbackState(null);
+      jwt = resp.data.jwt;
+    }
+  }
+
+  return jwt;
 }

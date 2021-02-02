@@ -4,9 +4,9 @@ import { CalTreeItem } from "../models/CalTreeItem";
 import { connectGoogleCalendar, disconnectGoogleCalendar } from "../services/CalendarService";
 import { AccountProvider } from "../tree/AccountProvider";
 import { CalendarEventProvider } from "../tree/CalendarEventProvider";
-import { connectCalendar, launchAuth, showLogInMenuOptions, showSignUpMenuOptions } from "./AccountManager";
+import { launchAuth, showLogInMenuOptions, showSignUpMenuOptions } from "./AccountManager";
 import { showCalendarInfo } from "./CalendarViewManager";
-import { connectTreeView } from "./TreeManager";
+import { connectTreeView, getAccountRevealButton } from "./TreeManager";
 
 export function initializeCommands(): { dispose: () => void } {
   const cmds = [];
@@ -102,6 +102,12 @@ function createCalAccountTreeView(cmds): TreeView<CalTreeItem> {
   cmds.push(
     commands.registerCommand("calendartime.refreshAccountView", () => {
       accountProvider.refresh();
+    })
+  );
+
+  cmds.push(
+    commands.registerCommand("calendartime.revealAccountView", () => {
+      accountProvider.revealTree(getAccountRevealButton());
     })
   );
 
