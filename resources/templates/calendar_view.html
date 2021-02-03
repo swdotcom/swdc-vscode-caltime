@@ -14,7 +14,7 @@
         width: 475px;
         top: 30px;
         left: 50%;
-        margin-left: -225px;
+        margin-left: -250px;
         background: ${this.cardBackgroundColor};
         border-radius: 2px;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* this adds the "card" effect */
@@ -39,21 +39,6 @@
         font-size: 12px;
         color: #919eab;
         font-weight: 500;
-    }
-
-    /* text input */
-    .text {
-        margin-right: 8px;
-        margin-top: 5px;
-        width: 435px;
-        font-size: 16px;
-        border-radius: 2px;
-        padding-left: 5px;
-        padding-right: 5px;
-        border-color: rgba(0, 0, 0, 0);
-        background-color: ${this.cardBackgroundColor};
-        color: $ {this.cardTextColor};
-        resize: none;
     }
 
     /* Buttons */
@@ -107,6 +92,20 @@
             margin-bottom: 20px;
         }
     }
+    .join-row {
+        margin-top: 20px;
+    }
+    .join_button {
+        font-size: 14px;
+        line-height: 18px;
+        font-weight: 400;
+        color: #fff;
+        background: #277dcc;
+        border: 3px solid #277dcc;
+        box-sizing: border-box;
+        border-radius: 2px;
+        cursor: pointer;
+    }
 </style>
 
 <body>
@@ -123,15 +122,18 @@
         </div>
         <div class="row">
             <div class="column">
-                <div class="inputHeader">${this.summary}<</div>
+                <div class="inputHeader">Organizer</div>
+                <div class="inputStyle">${this.organizer}</div>
             </div>
             <div class="column">
-                <div class="inputHeader">Going? ${this.status}</div>
+                <div class="inputHeader">Status</div>
+                <div class="inputStyle">${this.status}</div>
             </div>
         </div>
-        <div class="row">
+        <div class="row join-row">
             <div class="full_column">
-                <div class="inputHeader"><a href="${this.location}">${this.location}</a></div>
+                <div><button class="join_button">Join with ${this.joinType}</button></div>
+                <div class="inputHeader"><a href="${this.location}">${this.locationSnippet}</a></div>
             </div>
         </div>
 

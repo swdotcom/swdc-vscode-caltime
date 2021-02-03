@@ -71,13 +71,22 @@ export function getCalendarEventInfo(event: CalEvent): string {
   const eventDate: Date = new Date(event.start);
   const dateString = format(eventDate, "ccc, LLL do 'at' K:mm bbbb");
   const attendeeNames = event.attendees.map((attendee) => attendee.email).join(", ");
+  const location = event.location || event.htmlLink;
+  let locationSnippet = location;
+  let joinType = location.toLowerCase().includes("google.") ? "Google Meet" : "Zoom";
+  if (location && location.lastIndexOf("/") > 10) {
+    locationSnippet = location.substring(0, location.lastIndexOf("/"));
+  }
+  if (locationSnippet.indexOf("http") === 0) {
+    locationSnippet = locationSnippet.substring(locationSnippet.indexOf("//") + 2);
+  }
 
   // name, summary, organizer, status, location
   const templateVars = {
     cardTextColor,
     cardBackgroundColor,
     cardInputHeaderColor,
-    location: event.location || event.htmlLink,
+    location,
     name: event.name,
     organizer: event.organizer?.email ?? "",
     summary: event.summary,
@@ -85,6 +94,8 @@ export function getCalendarEventInfo(event: CalEvent): string {
     attendeeCount: event.attendeeCount,
     dateString,
     attendeeNames,
+    locationSnippet,
+    joinType,
   };
 
   const templateString = fs.readFileSync(getCalendarViewTemplate()).toString();
