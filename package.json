@@ -17,29 +17,37 @@
 	"contributes": {
 		"commands": [
 			{
-        "command": "calendartime.refreshCalendarView",
-        "title": "Calendar Time: Refresh calendar events",
-        "icon": {
-          "light": "resources/light/refresh.svg",
-          "dark": "resources/dark/refresh.svg"
-        }
+				"command": "calendartime.refreshCalendarView",
+				"title": "Calendar Time: Refresh calendar events",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
 			},
 			{
-        "command": "calendartime.disconnectCalendar",
-        "title": "Calendar Time: Disconnect calendar",
-        "icon": {
-          "light": "resources/light/remove.svg",
-          "dark": "resources/dark/remove.svg"
-        }
-      },
-      {
-        "command": "calendartime.connectCalendar",
-        "title": "Calendar Time: Add calendar",
-        "icon": {
-          "light": "resources/light/add.svg",
-          "dark": "resources/dark/add.svg"
-        }
-      }
+				"command": "calendartime.disconnectCalendar",
+				"title": "Calendar Time: Disconnect calendar",
+				"icon": {
+					"light": "resources/light/remove.svg",
+					"dark": "resources/dark/remove.svg"
+				}
+			},
+			{
+				"command": "calendartime.connectCalendar",
+				"title": "Calendar Time: Add calendar",
+				"icon": {
+					"light": "resources/light/add.svg",
+					"dark": "resources/dark/add.svg"
+				}
+			},
+			{
+				"command": "calendartime.deleteProtectedEvent",
+				"title": "Calendar Time: Delete protected event",
+				"icon": {
+					"light": "resources/light/remove.svg",
+					"dark": "resources/dark/remove.svg"
+				}
+			}
 		],
 		"viewsContainers": {
 			"activitybar": [
@@ -63,26 +71,31 @@
 			]
 		},
 		"menus": {
-      "view/item/context": [
+			"view/item/context": [
 				{
-          "command": "calendartime.disconnectCalendar",
-          "when": "viewItem =~ /calendar-integration-item/",
-          "group": "inline@1"
-        },
-        {
-          "command": "calendartime.connectCalendar",
-          "when": "viewItem =~ /calendar-integration-folder/",
-          "group": "inline@1"
-        }
+					"command": "calendartime.disconnectCalendar",
+					"when": "viewItem =~ /calendar-integration-item/",
+					"group": "inline@1"
+				},
+				{
+					"command": "calendartime.connectCalendar",
+					"when": "viewItem =~ /calendar-integration-folder/",
+					"group": "inline@1"
+				},
+				{
+					"command": "calendartime.deleteProtectedEvent",
+					"when": "viewItem =~ /protected-calendar-event/",
+					"group": "inline@1"
+				}
 			],
-      "view/title": [
-        {
-          "command": "calendartime.refreshCalendarView",
-          "group": "navigation@1",
-          "when": "view =~ /calendar-time-view/"
-        }
-      ]
-    }
+			"view/title": [
+				{
+					"command": "calendartime.refreshCalendarView",
+					"group": "navigation@1",
+					"when": "view =~ /calendar-time-view/"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run package",

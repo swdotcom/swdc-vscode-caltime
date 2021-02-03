@@ -1,7 +1,8 @@
 import { commands, Disposable, TreeView, window } from "vscode";
 import { CalEvent } from "../models/CalEvent";
 import { CalTreeItem } from "../models/CalTreeItem";
-import { connectGoogleCalendar, disconnectGoogleCalendar } from "../services/CalendarService";
+import { connectGoogleCalendar, deleteProtectedEvent } from "../services/CalendarService";
+import { disconnectCalendarIntegration } from "../services/IntegrationService";
 import { AccountProvider } from "../tree/AccountProvider";
 import { CalendarEventProvider } from "../tree/CalendarEventProvider";
 import { launchAuth, showLogInMenuOptions, showSignUpMenuOptions } from "./AccountManager";
@@ -66,8 +67,14 @@ export function initializeCommands(): { dispose: () => void } {
   );
 
   cmds.push(
-    commands.registerCommand("calendartime.disconnectCalendar", (event: CalEvent) => {
-      disconnectGoogleCalendar();
+    commands.registerCommand("calendartime.disconnectCalendar", (treeItem: CalTreeItem) => {
+      disconnectCalendarIntegration(treeItem);
+    })
+  );
+
+  cmds.push(
+    commands.registerCommand("calendartime.deleteProtectedEvent", (treeItem: CalTreeItem) => {
+      deleteProtectedEvent(treeItem);
     })
   );
 

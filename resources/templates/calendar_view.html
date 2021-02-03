@@ -79,6 +79,12 @@
         width: 40%;
         padding: 0 10px;
     }
+    .full_column {
+        position: relative;
+        float: left;
+        width: 80%;
+        padding: 0 10px;
+    }
 
     /* Remove extra left and right margins, due to padding in columns */
     .row {
@@ -108,44 +114,31 @@
     <div id="modal" class="card">
         <div class="row">
             <div class="column">
-                <div class="inputHeader">Name:</div>
-                <div class="inputStyle">
-                    <span>${this.name}</span>
-                </div>
+                <div class="titleHeader">${this.name}</div>
+                <div class="inputHeader">${this.dateString}</div>
             </div>
             <div class="column">
-                <div class="inputHeader">Summary:</div>
-                <div class="inputStyle">
-                    <span>${this.summary}</span>
-                </div>
+                <div class="inputHeader">${this.summary}</div>
             </div>
         </div>
         <div class="row">
             <div class="column">
-                <div class="inputHeader">Organizer</div>
-                <div class="inputStyle">
-                    <span>${this.organizer}</span>
-                </div>
+                <div class="inputHeader">${this.summary}<</div>
             </div>
             <div class="column">
-                <div class="inputHeader">Status:</div>
-                <div class="inputStyle">
-                    <span>${this.status}</span>
-                </div>
+                <div class="inputHeader">Going? ${this.status}</div>
             </div>
         </div>
         <div class="row">
-            <div class="column">
-                <div class="inputHeader">Location:</div>
-                <div class="inputStyle">
-                    <a href="${this.location}">${this.location}</a>
-                </div> 
+            <div class="full_column">
+                <div class="inputHeader"><a href="${this.location}">${this.location}</a></div>
             </div>
-            <div class="column">
-                <div class="inputHeader">Starting at:</div>
-                <div class="inputStyle">
-                    <span>${this.startTime}</span>
-                </div>
+        </div>
+
+        <div class="row">
+            <div class="full_column">
+                <div class="inputHeader">${this.attendeeCount} guests</div>
+                <div class="inputStyle">${this.attendeeNames}</div>
             </div>
         </div>
 

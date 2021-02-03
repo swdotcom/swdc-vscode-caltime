@@ -69,19 +69,22 @@ export function getCalendarEventInfo(event: CalEvent): string {
 
   // K:mmbbbb
   const eventDate: Date = new Date(event.start);
-  const startTime = format(eventDate, "ccc, LLL do 'at' K:mm bbbb");
+  const dateString = format(eventDate, "ccc, LLL do 'at' K:mm bbbb");
+  const attendeeNames = event.attendees.map((attendee) => attendee.email).join(", ");
 
   // name, summary, organizer, status, location
   const templateVars = {
     cardTextColor,
     cardBackgroundColor,
     cardInputHeaderColor,
-    location: event.location,
+    location: event.location || event.htmlLink,
     name: event.name,
     organizer: event.organizer?.email ?? "",
     summary: event.summary,
     status: event.status,
-    startTime,
+    attendeeCount: event.attendeeCount,
+    dateString,
+    attendeeNames,
   };
 
   const templateString = fs.readFileSync(getCalendarViewTemplate()).toString();

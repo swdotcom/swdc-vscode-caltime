@@ -12,6 +12,11 @@ export function getCalendarIntegrations() {
   );
 }
 
+export function getGoogleCalendarIntegrations() {
+  // the name is equal to "Calendar" for google calendars
+  return getIntegrations().filter((n: Integration) => n.name.toLowerCase() === "calendar" && n.status.toLowerCase() === "active" && n.access_token);
+}
+
 export function hasCalendarIntegrations() {
   return !!getCalendarIntegrations().length;
 }
@@ -42,6 +47,11 @@ export async function checkForNewCalendarIntegrationLazily(tryCountUntilFound = 
       window.showInformationMessage("Successfully connected your calendar");
     }
   }
+}
+
+export function removeIntegration(integration: Integration) {
+  const integrations: Integration[] = getIntegrations().filter((n: Integration) => n.authId !== integration.authId);
+  syncIntegrations(integrations);
 }
 
 function merge(a: Integration[], b: Integration[], prop): Integration[] {

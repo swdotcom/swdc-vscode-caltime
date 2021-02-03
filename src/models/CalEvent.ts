@@ -1,4 +1,5 @@
 export class CalEvent {
+  public id: string;
   public kind: string; // "calendar#event"
   public etag: string; // ""3217139351652000""
   public status: string; // "confirmed"

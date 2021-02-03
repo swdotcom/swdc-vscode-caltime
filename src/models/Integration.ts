@@ -9,6 +9,6 @@ export class Integration {
   public access_token: string;
   public refresh_token: string;
   public scopes: string[];
-  public authid: string;
+  public authId: string;
   public plugin_uuid: string;
 }

@@ -1,18 +1,16 @@
-import { isResponseOk, softwareGet } from "../client/HttpClient";
-import { CalendarEventInfo } from "../models/CalendarEventInfo";
+import { isResponseOk, softwareDelete, softwareGet } from "../client/HttpClient";
 import { CalEvent } from "../models/CalEvent";
 import { getPluginType, getThisWeek, getVersion } from "../managers/UtilManager";
 import { getAuthCallbackState, getItem, getPluginUuid } from "../managers/LocalManager";
 import { API_ENDPOINT, SOFTWARE_URL } from "../Constants";
 import { checkForNewCalendarIntegrationLazily } from "../managers/IntegrationManager";
 import { checkRegistration } from "../managers/AccountManager";
+import { CalendarEventInfo } from "../models/CalendarEventInfo";
+import { commands, window } from "vscode";
+import { CalTreeItem } from "../models/CalTreeItem";
 
 const queryString = require("query-string");
 const open = require("open");
-
-export async function disconnectGoogleCalendar() {
-  //
-}
 
 export async function connectGoogleCalendar() {
   if (!checkRegistration()) {
@@ -56,4 +54,13 @@ export async function getThisWeekCalendarEvents(): Promise<CalendarEventInfo> {
   }
 
   return calEventInfo;
+}
+
+export async function deleteProtectedEvent(treeItem: CalTreeItem) {
+  const calEvent: CalEvent = treeItem.value;
+  const resp = await softwareDelete(`/calendars/primary/events/${calEvent.id}?source=${calEvent.source}`);
+  if (isResponseOk(resp)) {
+    window.showInformationMessage("Deleted protected calendar event");
+    commands.executeCommand("calendartime.refreshCalendarView");
+  }
 }

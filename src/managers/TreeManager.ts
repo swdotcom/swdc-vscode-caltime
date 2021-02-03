@@ -10,6 +10,8 @@ import { getCalendarIntegrations, getTimeUntilNextMeeting, hasCalendarIntegratio
 import { Integration } from "../models/Integration";
 
 const collapsedStateMap = {};
+// mutable
+let eventIdMap = {};
 
 export const connectTreeView = (view: TreeView<CalTreeItem>) => {
   return Disposable.from(
@@ -49,12 +51,13 @@ export function isExpanded(id: string) {
 
 export async function getCalendarEventItems(): Promise<CalTreeItem[]> {
   const items: CalTreeItem[] = [];
+
+  // clear out the event ID map
+  eventIdMap = {};
   const calEventItems: CalTreeItem[] = await createCalendarEventItems();
 
   if (calEventItems?.length) {
     items.push(...calEventItems);
-  } else {
-    items.push(getConnectCalendarButton());
   }
 
   return items;
@@ -89,6 +92,7 @@ export async function getAccountItems(): Promise<CalTreeItem[]> {
         for (const calIntegration of calIntegrations) {
           const calendarIntegrationItem: CalTreeItem = new CalTreeItem(calIntegration.value, "", "", "google.svg");
           calendarIntegrationItem.id = calIntegration.value;
+          calendarIntegrationItem.value = calIntegration;
           calendarIntegrationItem.contextValue = "calendar-integration-item";
           calendarsFolder.children.push(calendarIntegrationItem);
         }
@@ -161,12 +165,29 @@ async function createCalendarEventItems(): Promise<CalTreeItem[]> {
       }
 
       const dateStr = format(new Date(item.start), "K:mm bbbb");
-      const eventItem: CalTreeItem = new CalTreeItem(item.name, item.summary, dateStr, null);
-      eventItem.id = item.eventId;
-      eventItem.command = { title: "View calendar event", command: "calendartime.viewEvent", arguments: [item] };
-      eventItem.value = item;
+      if (!eventIdMap[item.id]) {
+        eventIdMap[item.id] = item;
 
-      dayParent.children.push(eventItem);
+        const calName = item.source === "google_calendar" ? "Google" : "Outlook";
+        let iconName = "event.svg";
+        let tooltip = `Event from ${calName} Calendar`;
+        if (!item.isProtected && item.attendeeCount && item.attendeeCount > 1) {
+          iconName = "meeting.svg";
+        } else if (item.isProtected) {
+          iconName = "protected.svg";
+          tooltip = `Protected code time (${calName})`;
+        }
+
+        const eventItem: CalTreeItem = new CalTreeItem(item.name, tooltip, dateStr, iconName);
+        if (item.isProtected) {
+          eventItem.contextValue = "protected-calendar-event";
+        }
+        eventItem.id = item.eventId;
+        eventItem.command = { title: "View calendar event", command: "calendartime.viewEvent", arguments: [item] };
+        eventItem.value = item;
+
+        dayParent.children.push(eventItem);
+      }
     });
 
     // check to see if the integrations is not in sync with what we've retrieved
@@ -175,8 +196,10 @@ async function createCalendarEventItems(): Promise<CalTreeItem[]> {
       populateCalendarIntegrations();
     }
   } else {
-    // no events found
-    items.push(getConnectCalendarButton());
+    if (!hasCalendarIntegrations()) {
+      // no events found
+      items.push(getConnectCalendarButton());
+    }
   }
 
   return items;
