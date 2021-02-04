@@ -7,6 +7,7 @@ export function initializeStatusBar() {
     statusBarItem = window.createStatusBarItem(StatusBarAlignment.Right, 9);
     statusBarItem.command = "calendartime.revealCalendarView";
     statusBarItem.text = "$(calendar)";
+    statusBarItem.tooltip = "Calendar Time";
     statusBarItem.show();
   }
 }
