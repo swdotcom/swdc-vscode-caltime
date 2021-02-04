@@ -1,6 +1,6 @@
 import { TreeDataProvider, EventEmitter, Event, TreeView, TreeItem } from "vscode";
-import { getAccountItems } from "../managers/TreeManager";
 import { CalTreeItem } from "../models/CalTreeItem";
+import { getAccountChildrenItems } from "./TreeChildren";
 
 export class AccountProvider implements TreeDataProvider<CalTreeItem> {
   private _onDidChangeTreeData: EventEmitter<CalTreeItem | undefined> = new EventEmitter<CalTreeItem | undefined>();
@@ -52,7 +52,7 @@ export class AccountProvider implements TreeDataProvider<CalTreeItem> {
       items = element.children;
     } else {
       // return the parent elements
-      items = await getAccountItems();
+      items = await getAccountChildrenItems();
     }
     return items;
   }

@@ -44,12 +44,12 @@ export async function getThisWeekCalendarEvents(): Promise<CalendarEventInfo> {
 
   /** predictions structure
    * { "start": "2021-02-11T19:00:00Z",
-            "end": "2021-02-11T20:00:00Z",
-            "calendar": {
-                "name": "Predictions"
-            },
-            "isPrediction": true
-        }
+        "end": "2021-02-11T20:00:00Z",
+        "calendar": {
+            "name": "Predictions"
+        },
+        "isPrediction": true
+    }
    */
   const resp = await softwareGet(`/calendars/events?${qryStr}`);
   if (isResponseOk(resp)) {

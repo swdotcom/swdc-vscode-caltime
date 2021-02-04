@@ -7,7 +7,8 @@ import { AccountProvider } from "../tree/AccountProvider";
 import { CalendarEventProvider } from "../tree/CalendarEventProvider";
 import { launchAuth, showLogInMenuOptions, showSignUpMenuOptions } from "./AccountManager";
 import { showCalendarInfo } from "./CalendarViewManager";
-import { connectTreeView, getAccountRevealButton } from "./TreeManager";
+import { connectTreeView } from "../tree/TreeUtil";
+import { getAccountRevealButton, getCalendarRevealButton } from "../tree/TreeButtons";
 
 export function initializeCommands(): { dispose: () => void } {
   const cmds = [];
@@ -92,6 +93,12 @@ function createCalEventTreeView(cmds): TreeView<CalTreeItem> {
   cmds.push(
     commands.registerCommand("calendartime.refreshCalendarView", () => {
       calEventProvider.refresh();
+    })
+  );
+
+  cmds.push(
+    commands.registerCommand("calendartime.revealCalendarView", () => {
+      calEventProvider.revealTree(getCalendarRevealButton());
     })
   );
 

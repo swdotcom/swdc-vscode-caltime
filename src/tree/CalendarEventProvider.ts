@@ -1,6 +1,6 @@
 import { TreeDataProvider, EventEmitter, Event, TreeView, TreeItem } from "vscode";
-import { getCalendarEventItems } from "../managers/TreeManager";
 import { CalTreeItem } from "../models/CalTreeItem";
+import { getCalendarEventItems } from "./TreeChildren";
 
 export class CalendarEventProvider implements TreeDataProvider<CalTreeItem> {
   private _onDidChangeTreeData: EventEmitter<CalTreeItem | undefined> = new EventEmitter<CalTreeItem | undefined>();

@@ -4,6 +4,7 @@ import { getPluginName, getVersion } from "./managers/UtilManager";
 import { initializeLocalStorageContext } from "./services/LocalStorageService";
 import { getRandomArbitrary } from "./managers/UtilManager";
 import { onboardInit } from "./managers/OnboardManager";
+import { initializeStatusBar } from "./managers/StatusBarManager";
 
 export function activate(ctx: ExtensionContext) {
   initializeLocalStorageContext(ctx);
@@ -25,6 +26,8 @@ export async function intializePlugin(ctx: ExtensionContext) {
   console.log(`Loaded ${getPluginName()} v${getVersion()}`);
 
   ctx.subscriptions.push(initializeCommands());
+
+  initializeStatusBar();
 }
 
 // this method is called when your extension is deactivated
