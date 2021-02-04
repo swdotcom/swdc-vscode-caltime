@@ -125,25 +125,25 @@ async function createCalendarEventItems(): Promise<CalTreeItem[]> {
     const monthEndStr = format(end, "LLL");
     const startStr = format(start, "do");
     const endStr = format(end, "do");
-
-    const weekFolder: CalTreeItem = new CalTreeItem("This week", "", `${monthStartStr} ${startStr} to ${monthEndStr} ${endStr}`);
-    weekFolder.id = "cal_week_folder";
-    items.push(weekFolder);
-
     const now: Date = new Date();
     const today: string = format(now, "eeee");
 
-    weekFolder.children = [];
-
+    // NEXT MEETING LABEL
     // find out when the next meeting is starting
     const nextMeetingLabel = getTimeUntilNextMeeting(calEventInfo.events);
     const nextMeetingLabelItem = new CalTreeItem("", "", nextMeetingLabel);
     nextMeetingLabelItem.id = nextMeetingLabel;
-    weekFolder.children.push(nextMeetingLabelItem);
+    items.push(nextMeetingLabelItem);
+
+    // WEEK FOLDER
+    const weekFolder: CalTreeItem = new CalTreeItem("This week", "", `${monthStartStr} ${startStr} to ${monthEndStr} ${endStr}`);
+    weekFolder.id = "cal_week_folder";
+    weekFolder.children = [];
+    items.push(weekFolder);
     weekFolder.collapsibleState = !collapsedStateMap[weekFolder.id] ? TreeItemCollapsibleState.Expanded : collapsedStateMap[weekFolder.id];
 
     calEventInfo.events.forEach((item: CalEvent) => {
-      const eventDate: Date = new Date(item.start);
+      const eventDate: Date = new Date(item.end);
       const dayStr = format(eventDate, "eeee");
       let dayParent: CalTreeItem = treeParentMap[dayStr];
 
@@ -164,7 +164,7 @@ async function createCalendarEventItems(): Promise<CalTreeItem[]> {
         treeParentMap[dayStr] = dayParent;
       }
 
-      const dateStr = format(new Date(item.start), "K:mm bbbb");
+      const dateStr = format(new Date(item.end), "K:mm bbbb");
       if (!eventIdMap[item.id]) {
         eventIdMap[item.id] = item;
 

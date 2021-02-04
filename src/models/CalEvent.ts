@@ -8,6 +8,7 @@ export class CalEvent {
   public updated: string; // "2020-12-21T16:54:35.826Z"
   public summary: string; //"Daily Standup"
   public location: string; //"https://zoom.us/j/9346316985"
+  public conferenceData: any; // {conferenceId, conferenceSolution: {iconUri, key: {type}, name}, entryPoints: [{entryPointType, label, uri}], signature}
   public creator: any; // {email: "name@foo.com"}
   public organizer: any; // {email: "name@foo.com"}
   public start: string; // "Mon Jan 25 2021 09:15:00 GMT-0800"
@@ -27,6 +28,7 @@ export class CalEvent {
   public durationMinutes: number; // 30
   public eventId: string; // "bf6emeu834u04o570o7jg544fc_20210125T171500Z"
   public isMeeting: boolean; // true
+  public hangoutLink: string;
   public isProtected: boolean; // false
   public isRecurring: boolean; // true
   public link: string; // "https://www.google.com/calendar/event?eid=YmY2ZW1ldTgzNHUwNG81NzBvN2pnNTQ0ZmNfMjAyMTAxMjVUMTcxNTAwWiB4YXZpZXJAc29mdHdhcmUuY29t"

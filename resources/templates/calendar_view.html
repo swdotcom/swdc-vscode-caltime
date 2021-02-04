@@ -47,12 +47,15 @@
         float: right;
     }
 
-    #cancel {
-        font-size: 16px;
-        line-height: 25px;
-        color: $ {this.cardTextColor};
-        background-color: rgba(0, 0, 0, 0);
-        border-color: rgba(0, 0, 0, 0);
+    .buttons button {
+        font-size: 12px;
+        line-height: 18px;
+        font-weight: 600;
+        color: #277dcc;
+        width: 64px;
+        background: #e4e3e3;
+        border: 1px solid #277dcc;
+        box-sizing: border-box;
         border-radius: 2px;
         cursor: pointer;
     }
@@ -132,8 +135,8 @@
         </div>
         <div class="row join-row">
             <div class="full_column">
-                <div><button class="join_button">Join with ${this.joinType}</button></div>
-                <div class="inputHeader"><a href="${this.location}">${this.locationSnippet}</a></div>
+                <div><button class="join_button" id="join" data-value="${this.location}">${this.eventButtonLabel}</button></div>
+                <div class="inputHeader"><a href="${this.location}">${this.locationLabel}</a></div>
             </div>
         </div>
 
@@ -145,23 +148,34 @@
         </div>
 
         <div class="buttons">
+            <button id="edit" data-value="${this.eventLink}">Edit</button>
             <button id="close">Close</button>
         </div>
     </div>
 </body>
 <script>
     let vscode;
-    let close;
+
     window.addEventListener("load", () => {
         vscode = acquireVsCodeApi();
 
-        close = document.getElementById("close");
-
-        close.addEventListener("click", closeEvent);
+        document.getElementById("close").addEventListener("click", closeEvent);
+        document.getElementById("join").addEventListener("click", joinEvent);
+        document.getElementById("edit").addEventListener("click", editEvent);
     });
 
     function closeEvent() {
         vscode.postMessage({ command: "cancel" });
+    }
+
+    function joinEvent() {
+        const joinLink = document.getElementById("join").getAttribute("data-value");
+        vscode.postMessage({ command: "join", value: joinLink });
+    }
+
+    function editEvent() {
+        const editLink = document.getElementById("edit").getAttribute("data-value");
+        vscode.postMessage({ command: "edit", value: editLink });
     }
 </script>
 

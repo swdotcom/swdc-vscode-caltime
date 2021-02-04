@@ -4,7 +4,7 @@ export const IDE_PLUGIN_ID = "softwaredotcom.calendar-time";
 export const PLUGIN_TYPE = "calendartime";
 
 // Directory where software data is stored
-export const SOFTWARE_DIRECTORY = ".software_caltime";
+export const SOFTWARE_DIRECTORY = ".software-caltime";
 
 // API ENDPOINT
 export const API_ENDPOINT = "http://localhost:5000"; //"https://api.software.com";

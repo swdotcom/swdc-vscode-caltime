@@ -4,6 +4,8 @@ import path = require("path");
 import fs = require("fs");
 import { format } from "date-fns";
 
+const open = require("open");
+
 let currentPanel: WebviewPanel | undefined = undefined;
 let currentColorKind: number = undefined;
 let currentEvent: CalEvent = null;
@@ -44,7 +46,9 @@ export function showCalendarInfo(event: CalEvent) {
     });
     currentPanel.webview.onDidReceiveMessage(async (message) => {
       switch (message.command) {
-        case "locationSelect":
+        case "join":
+        case "edit":
+          open(message.value);
           break;
       }
       if (currentPanel) {
@@ -70,16 +74,47 @@ export function getCalendarEventInfo(event: CalEvent): string {
   // K:mmbbbb
   const eventDate: Date = new Date(event.start);
   const dateString = format(eventDate, "ccc, LLL do 'at' K:mm bbbb");
-  const attendeeNames = event.attendees.map((attendee) => attendee.email).join(", ");
-  const location = event.location || event.htmlLink;
-  let locationSnippet = location;
-  let joinType = location.toLowerCase().includes("google.") ? "Google Meet" : "Zoom";
-  if (location && location.lastIndexOf("/") > 10) {
-    locationSnippet = location.substring(0, location.lastIndexOf("/"));
+  const attendeeNames = event.attendees?.map((attendee) => attendee.email).join(", ") ?? "";
+
+  // if "location" is available then it's most likely a zoom link, but
+  // it's a video meet in any case
+  // if "conferenceData" is available then it's a google meet
+  // conferenceData structure:
+  // {conferenceId, conferenceSolution: {iconUri, key: {type}, name}, entryPoints: [{entryPointType, label, uri}], signature}
+
+  let location = "";
+  let locationLabel = "";
+  let eventButtonLabel = "";
+  const link = event.link.replace(/(^\w+:|^)\/\//, "");
+  const eventLink = event.htmlLink;
+  if (event.location) {
+    location = event.location;
+    locationLabel = location.replace(/(^\w+:|^)\/\//, "");
+    // get the domain name
+    let hostname = locationLabel.split(/[/?#]/)[0];
+    if (hostname.indexOf(".") !== -1) {
+      hostname = hostname.substring(0, hostname.lastIndexOf("."));
+    }
+    // uppercase the 1st character
+    hostname = hostname.charAt(0).toUpperCase() + hostname.slice(1);
+    eventButtonLabel = `Join with ${hostname}`;
+  } else if (event?.conferenceData?.entryPoints?.length) {
+    // get it out of the conference Data
+    if (event.hangoutLink) {
+      location = event.hangoutLink;
+    } else {
+      location = event.conferenceData.entryPoints[0].uri;
+    }
+    locationLabel = event.conferenceData.entryPoints[0].label;
+    eventButtonLabel = "Join with " + event.conferenceData.conferenceSolution.name;
+  } else {
+    // use the link
+    location = event.link ?? event.htmlLink;
+    locationLabel = link.substring(0, link.lastIndexOf("/"));
+    eventButtonLabel = "View Event";
   }
-  if (locationSnippet.indexOf("http") === 0) {
-    locationSnippet = locationSnippet.substring(locationSnippet.indexOf("//") + 2);
-  }
+
+  const summary = event.isProtected ? event.summary : event.description ?? event.summary;
 
   // name, summary, organizer, status, location
   const templateVars = {
@@ -87,15 +122,16 @@ export function getCalendarEventInfo(event: CalEvent): string {
     cardBackgroundColor,
     cardInputHeaderColor,
     location,
+    locationLabel,
     name: event.name,
     organizer: event.organizer?.email ?? "",
-    summary: event.summary,
+    summary,
     status: event.status,
     attendeeCount: event.attendeeCount,
     dateString,
     attendeeNames,
-    locationSnippet,
-    joinType,
+    eventButtonLabel,
+    eventLink,
   };
 
   const templateString = fs.readFileSync(getCalendarViewTemplate()).toString();
