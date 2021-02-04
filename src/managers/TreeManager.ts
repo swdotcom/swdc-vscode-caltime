@@ -4,7 +4,7 @@ import { CalEvent } from "../models/CalEvent";
 import { CalTreeItem } from "../models/CalTreeItem";
 import { getThisWeekCalendarEvents } from "../services/CalendarService";
 import { getItem } from "./LocalManager";
-import { format } from "date-fns";
+import { format, isBefore } from "date-fns";
 import { getThisWeek } from "./UtilManager";
 import { getCalendarIntegrations, getTimeUntilNextMeeting, hasCalendarIntegrations, populateCalendarIntegrations } from "./IntegrationManager";
 import { Integration } from "../models/Integration";
@@ -142,9 +142,13 @@ async function createCalendarEventItems(): Promise<CalTreeItem[]> {
     items.push(weekFolder);
     weekFolder.collapsibleState = !collapsedStateMap[weekFolder.id] ? TreeItemCollapsibleState.Expanded : collapsedStateMap[weekFolder.id];
 
-    calEventInfo.events.forEach((item: CalEvent) => {
-      const eventDate: Date = new Date(item.end);
-      const dayStr = format(eventDate, "eeee");
+    for (const item of calEventInfo.events) {
+      const eventStartDate: Date = new Date(item.start);
+      if (isBefore(eventStartDate, start)) {
+        continue;
+      }
+
+      const dayStr = format(eventStartDate, "eeee");
       let dayParent: CalTreeItem = treeParentMap[dayStr];
 
       if (!dayParent) {
@@ -164,7 +168,8 @@ async function createCalendarEventItems(): Promise<CalTreeItem[]> {
         treeParentMap[dayStr] = dayParent;
       }
 
-      const dateStr = format(new Date(item.end), "K:mm bbbb");
+      const startTime = format(new Date(item.start), "K:mm bbbb");
+
       if (!eventIdMap[item.id]) {
         eventIdMap[item.id] = item;
 
@@ -178,7 +183,7 @@ async function createCalendarEventItems(): Promise<CalTreeItem[]> {
           tooltip = `Protected code time (${calName})`;
         }
 
-        const eventItem: CalTreeItem = new CalTreeItem(item.name, tooltip, dateStr, iconName);
+        const eventItem: CalTreeItem = new CalTreeItem(item.name, tooltip, startTime, iconName);
         if (item.isProtected) {
           eventItem.contextValue = "protected-calendar-event";
         }
@@ -188,7 +193,7 @@ async function createCalendarEventItems(): Promise<CalTreeItem[]> {
 
         dayParent.children.push(eventItem);
       }
-    });
+    }
 
     // check to see if the integrations is not in sync with what we've retrieved
     if (!hasCalendarIntegrations()) {

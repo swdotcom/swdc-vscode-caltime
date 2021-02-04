@@ -27,10 +27,10 @@ function init() {
 }
 
 export function showCalendarInfo(event: CalEvent) {
-  if (currentColorKind === null) {
+  if (!currentColorKind) {
     init();
   }
-  currentEvent = currentEvent;
+  currentEvent = event;
   const generatedHtml = getCalendarEventInfo(event);
 
   if (currentPanel) {

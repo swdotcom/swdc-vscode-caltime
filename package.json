@@ -62,7 +62,7 @@
 			"calendar-time": [
 				{
 					"id": "calendar-time-view",
-					"name": "Calendar Time"
+					"name": "Events"
 				},
 				{
 					"id": "calendar-account-view",
@@ -131,6 +131,7 @@
 		"file-it": "^1.1.0",
 		"open": "^7.4.0",
 		"query-string": "^6.13.8",
-		"uuid": "^8.3.2"
+		"uuid": "^8.3.2",
+		"ws": "^7.4.3"
 	}
 }

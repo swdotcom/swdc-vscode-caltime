@@ -53,11 +53,16 @@
         font-weight: 600;
         color: #277dcc;
         width: 64px;
-        background: #e4e3e3;
+        background: #e7e6e6;
         border: 1px solid #277dcc;
         box-sizing: border-box;
         border-radius: 2px;
         cursor: pointer;
+    }
+
+    .buttons #edit {
+        background: #277dcc;
+        color: #fff;
     }
 
     /* Float four columns side by side */
@@ -98,7 +103,7 @@
     .join-row {
         margin-top: 20px;
     }
-    .join_button {
+    .form_element_button {
         font-size: 14px;
         line-height: 18px;
         font-weight: 400;
@@ -135,7 +140,7 @@
         </div>
         <div class="row join-row">
             <div class="full_column">
-                <div><button class="join_button" id="join" data-value="${this.location}">${this.eventButtonLabel}</button></div>
+                <div><button class="form_element_button" id="join" data-value="${this.location}">${this.eventButtonLabel}</button></div>
                 <div class="inputHeader"><a href="${this.location}">${this.locationLabel}</a></div>
             </div>
         </div>
