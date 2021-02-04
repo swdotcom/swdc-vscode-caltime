@@ -1,6 +1,6 @@
 import { isResponseOk, softwareDelete, softwareGet } from "../client/HttpClient";
 import { CalEvent } from "../models/CalEvent";
-import { getPluginType, getThisWeek, getVersion } from "../managers/UtilManager";
+import { getPluginType, getVersion } from "../managers/UtilManager";
 import { getAuthCallbackState, getItem, getPluginUuid } from "../managers/LocalManager";
 import { API_ENDPOINT, SOFTWARE_URL } from "../Constants";
 import { checkForNewCalendarIntegrationLazily } from "../managers/IntegrationManager";
@@ -8,6 +8,7 @@ import { checkRegistration } from "../managers/AccountManager";
 import { CalendarEventInfo } from "../models/CalendarEventInfo";
 import { commands, window } from "vscode";
 import { CalTreeItem } from "../models/CalTreeItem";
+import { getThisWeek } from "../managers/DateManager";
 
 const queryString = require("query-string");
 const open = require("open");
@@ -44,12 +45,11 @@ export async function getThisWeekCalendarEvents(): Promise<CalendarEventInfo> {
 
   /** predictions structure
    * { "start": "2021-02-11T19:00:00Z",
-        "end": "2021-02-11T20:00:00Z",
-        "calendar": {
-            "name": "Predictions"
-        },
-        "isPrediction": true
-    }
+      "end": "2021-02-11T20:00:00Z",
+      "calendar": {
+          "name": "Predictions"
+      },
+      "isPrediction": true }
    */
   const resp = await softwareGet(`/calendars/events?${qryStr}`);
   if (isResponseOk(resp)) {

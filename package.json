@@ -43,6 +43,14 @@
 				}
 			},
 			{
+				"command": "calendartime.refreshAccountView",
+				"title": "Calendar Time: Refresh calendar events",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
+			},
+			{
 				"command": "calendartime.disconnectCalendar",
 				"title": "Calendar Time: Disconnect calendar",
 				"icon": {
@@ -111,6 +119,11 @@
 					"command": "calendartime.refreshCalendarView",
 					"group": "navigation@1",
 					"when": "view =~ /calendar-time-view/"
+				},
+				{
+					"command": "calendartime.refreshAccountView",
+					"group": "navigation@1",
+					"when": "view =~ /calendar-account-view/"
 				}
 			]
 		}

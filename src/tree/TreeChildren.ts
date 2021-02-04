@@ -6,7 +6,7 @@ import {
   populateCalendarIntegrations,
 } from "../managers/IntegrationManager";
 import { getItem } from "../managers/LocalManager";
-import { getThisWeek } from "../managers/UtilManager";
+import { getThisWeek } from "../managers/DateManager";
 import { isExpanded } from "./TreeUtil";
 import { CalTreeItem } from "../models/CalTreeItem";
 import { Integration } from "../models/Integration";

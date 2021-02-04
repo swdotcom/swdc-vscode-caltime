@@ -1,6 +1,5 @@
 import { extensions } from "vscode";
 import { IDE_PLUGIN_ID, PLUGIN_TYPE, SOFTWARE_PLUGIN_ID } from "../Constants";
-import { getUnixTime, endOfWeek, startOfWeek } from "date-fns";
 
 const os = require("os");
 const { exec } = require("child_process");
@@ -128,11 +127,4 @@ export function execPromise(command, opts) {
       resolve(stdout.trim());
     });
   });
-}
-
-export function getThisWeek(isUnix: boolean = true) {
-  const d: Date = new Date();
-  const start = isUnix ? getUnixTime(startOfWeek(d)) : startOfWeek(d);
-  const end = isUnix ? getUnixTime(endOfWeek(d)) : endOfWeek(d);
-  return { start, end };
 }
